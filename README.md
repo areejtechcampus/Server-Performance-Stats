@@ -10,3 +10,5 @@ You are required to write a script server-stats.sh that can analyse basic server
 - Total disk usage (Free vs Used including percentage)
 - Top 5 processes by CPU usage
 - Top 5 processes by memory usage
+
+to learn more : https://roadmap.sh/projects/server-stats
