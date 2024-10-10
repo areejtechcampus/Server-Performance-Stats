@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Function to display CPU usage
+cpu_usage() {
+    echo "===== CPU Usage ====="
+    # Get CPU usage using 'top' or 'mpstat' if available
+    if command -v top &> /dev/null; then
+       top | awk '$3 ~ /CPU/ {next} {print "CPU usage: " 100-$NF"%"}'
+    else
+        top -bn1 | grep "Cpu(s)" | \
+        sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | \
+        awk '{print "CPU Usage: " 100 - $1"%"}'
+    fi
+    echo ""
+}
+
+# Function to display memory usage
+memory_usage() {
+    echo "===== Memory Usage ====="
+    free -h | awk '/^Mem/ {print "Used: "$3, "Free: "$4, "Total: "$2}'
+    echo ""
+}
+
+# Function to display disk usage
+disk_usage() {
+    echo "===== Disk Usage ====="
+    df -h --total | grep "total" | awk '{print "Used: "$3, "Available: "$4, "Total: "$2}'
+    echo ""
+}
+
+# Function to display network traffic stats
+network_usage() {
+    echo "===== Network Usage ====="
+    # Capture network usage with ifconfig or ip
+    if command -v ip &> /dev/null; then
+        ip -s link show | awk '/^[0-9]/ {ifname=$2} /RX:|TX:/ {print ifname, $0}'
+    else
+        ifconfig | awk '/^[a-z]/ {iface=$1} /RX bytes|TX bytes/ {print iface, $0}'
+    fi
+    echo ""
+}
+
+# Function to display system uptime
+system_uptime() {
+    echo "===== System Uptime ====="
+    uptime -p
+    echo ""
+}
+
+# Main program
+echo "================================="
+echo "    SERVER PERFORMANCE STATS     "
+echo "================================="
+
+cpu_usage
+memory_usage
+disk_usage
+network_usage
+system_uptime
